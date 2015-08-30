@@ -1,6 +1,9 @@
 package com.bawsephighter;
 
+import java.io.IOException;
+
 import org.andengine.engine.Engine;
+import org.andengine.ui.IGameInterface.OnCreateSceneCallback;
 
 import com.bawsephighter.base.BaseScene;
 
@@ -34,6 +37,8 @@ public class SceneManager
         SCENE_GAME,
         SCENE_LOADING,
     }
+    
+  
     
     //---------------------------------------------
     // CLASS LOGIC
@@ -85,4 +90,18 @@ public class SceneManager
     {
         return currentScene;
     }
+    
+    public void createSplashScene(OnCreateSceneCallback pOnCreateSceneCallback){
+        ResourcesManager.getInstance().loadSplashScreen();
+        splashScene = new SplashScene();
+        currentScene = splashScene;
+        pOnCreateSceneCallback.onCreateSceneFinished(splashScene);
+    }
+    
+	private void disposeSplashScene(){
+        ResourcesManager.getInstance().unloadSplashScreen();
+        splashScene.disposeScene();
+        splashScene = null;
+    }
+	
 }

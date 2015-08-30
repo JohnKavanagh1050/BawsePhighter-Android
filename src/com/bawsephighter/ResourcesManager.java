@@ -15,12 +15,7 @@ import org.andengine.util.debug.Debug;
 
 import com.bawsephighter.GameActivity;
 
-public class ResourcesManager
-{
-    //---------------------------------------------
-    // VARIABLES
-    //---------------------------------------------
-    
+public class ResourcesManager{
     private static final ResourcesManager INSTANCE = new ResourcesManager();
     
     public Engine engine;
@@ -28,29 +23,21 @@ public class ResourcesManager
     public Camera camera;
     public VertexBufferObjectManager vbom;
     
-    //---------------------------------------------
-    // TEXTURES & TEXTURE REGIONS
-    //---------------------------------------------
-    
-    //---------------------------------------------
-    // CLASS LOGIC
-    //---------------------------------------------
+    public ITextureRegion splash_region;
+	private BitmapTextureAtlas splashTextureAtlas;
 
-    public void loadMenuResources()
-    {
+    public void loadMenuResources(){
         loadMenuGraphics();
         loadMenuAudio();
     }
     
-    public void loadGameResources()
-    {
+    public void loadGameResources(){
         loadGameGraphics();
         loadGameFonts();
         loadGameAudio();
     }
     
-    private void loadMenuGraphics()
-    {
+    private void loadMenuGraphics(){
         
     }
     
@@ -74,25 +61,18 @@ public class ResourcesManager
         
     }
     
-    public void loadSplashScreen()
-    {
-    
+    public void loadSplashScreen(){
+    	BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("");
+    	splashTextureAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 400, 400, TextureOptions.BILINEAR);
+    	splash_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas, activity, "splash.png", 0, 0);
+    	splashTextureAtlas.load();
     }
     
-    public void unloadSplashScreen()
-    {
-
+    public void unloadSplashScreen(){
+    	splashTextureAtlas.unload();
+    	splash_region = null;
     }
     
-    /**
-     * @param engine
-     * @param activity
-     * @param camera
-     * @param vbom
-     * <br><br>
-     * We use this method at beginning of game loading, to prepare Resources Manager properly,
-     * setting all needed parameters, so we can latter access them from different classes (eg. scenes)
-     */
     public static void prepareManager(Engine engine, GameActivity activity, Camera camera, VertexBufferObjectManager vbom)
     {
         getInstance().engine = engine;
@@ -100,10 +80,6 @@ public class ResourcesManager
         getInstance().camera = camera;
         getInstance().vbom = vbom;
     }
-    
-    //---------------------------------------------
-    // GETTERS AND SETTERS
-    //---------------------------------------------
     
     public static ResourcesManager getInstance()
     {
