@@ -1,26 +1,18 @@
 package com.bawsephighter;
 
-import java.io.IOException;
-
 import org.andengine.engine.Engine;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.ui.IGameInterface.OnCreateSceneCallback;
 
 import com.bawsephighter.base.BaseScene;
 
-public class SceneManager
-{
-    //---------------------------------------------
-    // SCENES
-    //---------------------------------------------
-    
+public class SceneManager{
+
     private BaseScene splashScene;
     private BaseScene menuScene;
     private BaseScene gameScene;
     private BaseScene loadingScene;
-    
-    //---------------------------------------------
-    // VARIABLES
-    //---------------------------------------------
     
     private static final SceneManager INSTANCE = new SceneManager();
     
@@ -30,20 +22,13 @@ public class SceneManager
     
     private Engine engine = ResourcesManager.getInstance().engine;
     
-    public enum SceneType
-    {
+    public enum SceneType{
         SCENE_SPLASH,
         SCENE_MENU,
         SCENE_GAME,
         SCENE_LOADING,
     }
-    
-  
-    
-    //---------------------------------------------
-    // CLASS LOGIC
-    //---------------------------------------------
-    
+
     public void setScene(BaseScene scene)
     {
         engine.setScene(scene);
@@ -72,22 +57,15 @@ public class SceneManager
         }
     }
     
-    //---------------------------------------------
-    // GETTERS AND SETTERS
-    //---------------------------------------------
-    
-    public static SceneManager getInstance()
-    {
+    public static SceneManager getInstance(){
         return INSTANCE;
     }
     
-    public SceneType getCurrentSceneType()
-    {
+    public SceneType getCurrentSceneType(){
         return currentSceneType;
     }
     
-    public BaseScene getCurrentScene()
-    {
+    public BaseScene getCurrentScene(){
         return currentScene;
     }
     
@@ -104,4 +82,27 @@ public class SceneManager
         splashScene = null;
     }
 	
+	public void createMenuScene(){
+	    ResourcesManager.getInstance().loadMenuResources();
+	    menuScene = new MainMenuScene();
+	    loadingScene = new LoadingScene();
+	    setScene(menuScene);
+	    disposeSplashScene();
+	}
+	
+	public void loadGameScene(final Engine mEngine)
+	{
+	    setScene(loadingScene);
+	    ResourcesManager.getInstance().unloadMenuTextures();
+	    mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() 
+	    {
+	        public void onTimePassed(final TimerHandler pTimerHandler) 
+	        {
+	            mEngine.unregisterUpdateHandler(pTimerHandler);
+	            ResourcesManager.getInstance().loadGameResources();
+	            gameScene = new GameScene();
+	            setScene(gameScene);
+	        }
+	    }));
+	}
 }
