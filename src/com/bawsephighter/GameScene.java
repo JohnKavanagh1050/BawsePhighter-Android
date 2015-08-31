@@ -1,6 +1,8 @@
 package com.bawsephighter;
 
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.entity.scene.IOnSceneTouchListener;
+import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
@@ -9,6 +11,7 @@ import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.ITextureRegion;
@@ -23,7 +26,7 @@ import com.bawsephighter.base.BaseScene;
 
 import android.graphics.Color;
 
-public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene{
+public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene implements IOnSceneTouchListener{
 	
 	private HUD gameHUD;
 	
@@ -88,8 +91,9 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene{
     	createBackground();
         createHUD();
         createPhysics();  
-        //createPlayer();
+        createPlayer();
         createBoundry();
+        //onSceneTouchEvent(this, null);
     }
     
 	private void createBoundry(){
@@ -128,8 +132,14 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene{
 	
     @Override
     public void createPlayer(){
-    	player = new Sprite(300,50, mBoundryTextureRegion, engine.getVertexBufferObjectManager());
-		Body bodyPlayer = PhysicsFactory.createBoxBody(physicsWorld, player, BodyType.DynamicBody, null);
+    	final FixtureDef fixDef = PhysicsFactory.createFixtureDef(0f,0f, 1.0f);
+		
+		BitmapTextureAtlas mTexturePlayer = new BitmapTextureAtlas(engine.getTextureManager(), 90, 110);
+		mPlayerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mTexturePlayer, this.activity, "player.png", 0, 0);
+		mTexturePlayer.load();
+		
+    	player = new Sprite(300,350, mPlayerTextureRegion, engine.getVertexBufferObjectManager());
+		Body bodyPlayer = PhysicsFactory.createBoxBody(physicsWorld, player, BodyType.StaticBody, fixDef);
 		physicsWorld.registerPhysicsConnector(new PhysicsConnector(player, bodyPlayer, true, true));
 		player.setScale(0.5f);
 		attachChild(player);
@@ -144,6 +154,35 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene{
     public SceneType getSceneType(){
         return SceneType.SCENE_GAME;
     }
+    
+    @Override
+	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+		float touchFromRight = pSceneTouchEvent.getX() - (player.getX() + player.getWidth());
+		float touchFromLeft = pSceneTouchEvent.getX() - player.getX();
+		float touchFromBottom = pSceneTouchEvent.getY() - (player.getY() + player.getHeight());
+		float touchFromTop = pSceneTouchEvent.getY() - player.getY();
+		Body bodyPlayer = (Body) player.getUserData();
+		//Touch to the right of the player
+		if ((touchFromRight > 0) && (touchFromRight < 800)){
+			if (touchFromRight > 30){
+				bodyPlayer.setLinearVelocity(5, bodyPlayer.getLinearVelocity().y);
+			}
+			else{
+				bodyPlayer.setLinearVelocity(1, bodyPlayer.getLinearVelocity().y);
+			}
+		}
+		//Touch to the left of the player
+		else if ((touchFromLeft < 0) && (touchFromLeft > -800)){
+			
+			if (touchFromLeft < -30){
+				bodyPlayer.setLinearVelocity(-5, bodyPlayer.getLinearVelocity().y);
+			}
+			else{
+				bodyPlayer.setLinearVelocity(-1, bodyPlayer.getLinearVelocity().y);
+			}
+		}
+		return false;
+	}
 
     @Override
     public void disposeScene(){

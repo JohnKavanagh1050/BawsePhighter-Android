@@ -3,6 +3,7 @@ package com.bawsephighter.base;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.scene.Scene;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.app.Activity;
@@ -50,6 +51,10 @@ public abstract class BaseScene extends Scene
 
 	public void createPlayer() {
 		// TODO Auto-generated method stub
-		
+	}
+
+	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
