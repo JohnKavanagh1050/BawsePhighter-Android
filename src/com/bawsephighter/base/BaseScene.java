@@ -49,7 +49,7 @@ public abstract class BaseScene extends Scene
     
     public abstract void disposeScene();
 
-	public void createPlayer() {
+	public void createObjects() {
 		// TODO Auto-generated method stub
 	}
 

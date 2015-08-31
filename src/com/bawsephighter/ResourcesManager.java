@@ -26,15 +26,21 @@ public class ResourcesManager{
     public Camera camera;
     public VertexBufferObjectManager vbom;
     
+    //Splash
 	private BitmapTextureAtlas splashTextureAtlas;
     public ITextureRegion splash_region;
 	
+    //Menu
 	private BuildableBitmapTextureAtlas menuTextureAtlas;
 	public ITextureRegion menu_background_region;
 	public ITextureRegion play_region;
 	public ITextureRegion options_region;
+	public ITextureRegion player_region;
 	public Font font;
-
+	
+	//Game
+	public BuildableBitmapTextureAtlas gameTextureAtlas;
+    
     public void loadMenuResources(){
         loadMenuGraphics();
         loadMenuAudio();
@@ -53,12 +59,28 @@ public class ResourcesManager{
     }
     
     public void loadGameResources(){
+    	loadGameTextures();
         loadGameFonts();
         loadGameAudio();
     }
     
     private void loadMenuAudio(){
         
+    }
+    
+    private void loadGameTextures(){
+    	gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 2048, 2048, TextureOptions.BILINEAR);
+    	player_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "player.png");
+    	
+    	try 
+        {
+            gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+            gameTextureAtlas.load();
+        } 
+        catch (final TextureAtlasBuilderException e)
+        {
+            Debug.e(e);
+        }
     }
     
     private void loadGameFonts(){

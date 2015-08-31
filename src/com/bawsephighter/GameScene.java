@@ -32,18 +32,16 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene implements
 	
 	private Text bossHealth;
 	private Text playerHealth;
+	private Text score;
 	private int bossHealthNumber = 100;
 	private int playerHealthNumber = 100;
+	private int scoreNumber = 0;
 	private PhysicsWorld physicsWorld;
-	
-	private BitmapTextureAtlas mTexturePlayer;
 	
 	private ITextureRegion mPlayerTextureRegion;
 	private ITextureRegion mBoundryTextureRegion;
 	
-	private Sprite player;
-	private Sprite boss1;
-	private Sprite boss2;
+	private Player player;
 
 	private void createHUD(){
 	    gameHUD = new HUD();
@@ -64,21 +62,24 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene implements
 	    playerHealth.setColor(0,0,0);
 	    gameHUD.attachChild(playerHealth);
 	    
+	    // CREATE score
+	    score = new Text(500, 400, resourcesManager.font, "Score: 0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
+	    score.setSkewCenter(0, 0);
+	    score.setScale(0.5f);
+	    score.setText("Score: 0");
+	    score.setColor(0,0,0);
+	    gameHUD.attachChild(score);
+	    
 	    camera.setHUD(gameHUD);
 	}
-
-	private void BawseHit(int i){
-	    bossHealthNumber -= i;
-	    bossHealth.setText("Health: " + bossHealthNumber );
-	}
 	
-	private void PlayerHit(int i){
-	    playerHealthNumber -= i;
-	    playerHealth.setText("Health: " + playerHealthNumber );
+	private void AddScore(int i){
+	    scoreNumber -= i;
+	    score.setText("Score: " + scoreNumber );
 	}
 
 	private void createPhysics(){
-	    physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, -17), false); 
+	    physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, 0), false); 
 	    registerUpdateHandler(physicsWorld);
 	}
     
@@ -91,9 +92,10 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene implements
     	createBackground();
         createHUD();
         createPhysics();  
-        createPlayer();
+        createObjects();
         createBoundry();
-        //onSceneTouchEvent(this, null);
+        this.engine.registerUpdateHandler(this);
+        setOnSceneTouchListener(this);
     }
     
 	private void createBoundry(){
@@ -131,17 +133,8 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene implements
 	}
 	
     @Override
-    public void createPlayer(){
-    	final FixtureDef fixDef = PhysicsFactory.createFixtureDef(0f,0f, 1.0f);
-		
-		BitmapTextureAtlas mTexturePlayer = new BitmapTextureAtlas(engine.getTextureManager(), 90, 110);
-		mPlayerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mTexturePlayer, this.activity, "player.png", 0, 0);
-		mTexturePlayer.load();
-		
-    	player = new Sprite(300,350, mPlayerTextureRegion, engine.getVertexBufferObjectManager());
-		Body bodyPlayer = PhysicsFactory.createBoxBody(physicsWorld, player, BodyType.StaticBody, fixDef);
-		physicsWorld.registerPhysicsConnector(new PhysicsConnector(player, bodyPlayer, true, true));
-		player.setScale(0.5f);
+    public void createObjects(){
+    	player = new Player(300, 400, vbom, physicsWorld);
 		attachChild(player);
     }
 
@@ -157,30 +150,31 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene implements
     
     @Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
-		float touchFromRight = pSceneTouchEvent.getX() - (player.getX() + player.getWidth());
+    	float touchFromRight = pSceneTouchEvent.getX() - (player.getX() + player.getWidth());
 		float touchFromLeft = pSceneTouchEvent.getX() - player.getX();
 		float touchFromBottom = pSceneTouchEvent.getY() - (player.getY() + player.getHeight());
 		float touchFromTop = pSceneTouchEvent.getY() - player.getY();
-		Body bodyPlayer = (Body) player.getUserData();
+		
 		//Touch to the right of the player
 		if ((touchFromRight > 0) && (touchFromRight < 800)){
-			if (touchFromRight > 30){
-				bodyPlayer.setLinearVelocity(5, bodyPlayer.getLinearVelocity().y);
-			}
-			else{
-				bodyPlayer.setLinearVelocity(1, bodyPlayer.getLinearVelocity().y);
-			}
+			player.setX(touchFromRight/10);
 		}
+		
 		//Touch to the left of the player
 		else if ((touchFromLeft < 0) && (touchFromLeft > -800)){
-			
-			if (touchFromLeft < -30){
-				bodyPlayer.setLinearVelocity(-5, bodyPlayer.getLinearVelocity().y);
-			}
-			else{
-				bodyPlayer.setLinearVelocity(-1, bodyPlayer.getLinearVelocity().y);
-			}
+			player.setX(touchFromLeft/10);
 		}
+		
+		//Touch to the top of the player
+		if ((touchFromTop > 0) && (touchFromTop < 480)){
+			player.setY(touchFromTop/10);
+		}
+		
+		//Touch to the bottom of the player
+		else if ((touchFromBottom < 0) && (touchFromBottom > -480)){
+			player.setY(touchFromBottom/10);
+		}
+
 		return false;
 	}
 
