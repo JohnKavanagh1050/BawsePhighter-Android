@@ -16,6 +16,8 @@ import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 
 public class ResourcesManager{
@@ -36,10 +38,13 @@ public class ResourcesManager{
 	public ITextureRegion play_region;
 	public ITextureRegion options_region;
 	public ITextureRegion player_region;
+	public ITextureRegion boss_region;
 	public Font font;
 	
 	//Game
 	public BuildableBitmapTextureAtlas gameTextureAtlas;
+	
+	public static SharedPreferences mSharedPref;
     
     public void loadMenuResources(){
         loadMenuGraphics();
@@ -71,7 +76,7 @@ public class ResourcesManager{
     private void loadGameTextures(){
     	gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 2048, 2048, TextureOptions.BILINEAR);
     	player_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "player.png");
-    	
+    	boss_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "firstboss.png");
     	try 
         {
             gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
@@ -132,7 +137,22 @@ public class ResourcesManager{
         getInstance().activity = activity;
         getInstance().camera = camera;
         getInstance().vbom = vbom;
+        mSharedPref = activity.getPreferences(Context.MODE_PRIVATE);
     }
+    
+    
+    public void saveHighScore(int highScore) {
+		 mSharedPref = activity.getPreferences(Context.MODE_PRIVATE);
+		 SharedPreferences.Editor editor = mSharedPref.edit();		
+		//editor.putInt(activity.getString(R.string.saved_high_score), highScore);
+		 editor.commit();
+	 }
+    
+    public int getHighScore(){
+		 int defaultValue = 0;
+		// int highScore = ResourcesManager.mSharedPref.getInt(activity.getString(R.string.saved_high_score), defaultValue);
+		 return 1;
+	 }
     
     public static ResourcesManager getInstance(){
         return INSTANCE;

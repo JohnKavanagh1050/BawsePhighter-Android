@@ -42,6 +42,7 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene implements
 	private ITextureRegion mBoundryTextureRegion;
 	
 	private Player player;
+	private Boss boss;
 
 	private void createHUD(){
 	    gameHUD = new HUD();
@@ -136,6 +137,9 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene implements
     public void createObjects(){
     	player = new Player(300, 400, vbom, physicsWorld);
 		attachChild(player);
+		
+		boss = new Boss(300, -50, vbom, physicsWorld);
+		attachChild(boss);
     }
 
     @Override
