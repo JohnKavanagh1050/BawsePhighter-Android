@@ -47,4 +47,9 @@ public abstract class BaseScene extends Scene
     public abstract SceneType getSceneType();
     
     public abstract void disposeScene();
+
+	public void createPlayer() {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -26,16 +26,14 @@ public class ResourcesManager{
     public Camera camera;
     public VertexBufferObjectManager vbom;
     
-    public ITextureRegion splash_region;
 	private BitmapTextureAtlas splashTextureAtlas;
+    public ITextureRegion splash_region;
 	
+	private BuildableBitmapTextureAtlas menuTextureAtlas;
 	public ITextureRegion menu_background_region;
 	public ITextureRegion play_region;
 	public ITextureRegion options_region;
-	
 	public Font font;
-	    
-	private BuildableBitmapTextureAtlas menuTextureAtlas;
 
     public void loadMenuResources(){
         loadMenuGraphics();
@@ -43,18 +41,18 @@ public class ResourcesManager{
         loadMenuFonts();
     }
     
-    public void unloadMenuTextures()
-    {
+    public void unloadMenuTextures(){
         menuTextureAtlas.unload();
     }
         
-    public void loadMenuTextures()
-    {
+    public void loadMenuTextures(){
         menuTextureAtlas.load();
     }
     
+    public void unloadGameTextures(){
+    }
+    
     public void loadGameResources(){
-        loadGameGraphics();
         loadGameFonts();
         loadGameAudio();
     }
@@ -62,19 +60,12 @@ public class ResourcesManager{
     private void loadMenuAudio(){
         
     }
-
-    private void loadGameGraphics()
-    {
+    
+    private void loadGameFonts(){
         
     }
     
-    private void loadGameFonts()
-    {
-        
-    }
-    
-    private void loadGameAudio()
-    {
+    private void loadGameAudio(){
         
     }
     
@@ -106,8 +97,7 @@ public class ResourcesManager{
     	}
     }
     
-    private void loadMenuFonts()
-    {
+    private void loadMenuFonts(){
         FontFactory.setAssetBasePath("");
         final ITexture mainFontTexture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 
