@@ -1,5 +1,7 @@
 package com.bawsephighter;
 
+import java.util.ArrayList;
+
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
@@ -43,6 +45,8 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene implements
 	
 	private Player player;
 	private Boss boss;
+	
+	private ArrayList<Projectile> projectiles = new ArrayList<Projectile>();
 
 	private void createHUD(){
 	    gameHUD = new HUD();
@@ -52,7 +56,7 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene implements
 	    bossHealth.setSkewCenter(0, 0);
 	    bossHealth.setScale(0.5f);
 	    bossHealth.setText("Bawse Health: 100");
-	    bossHealth.setColor(0,0,0);
+	    bossHealth.setColor(255,0,255);
 	    gameHUD.attachChild(bossHealth);
 	    
 	    // CREATE player health
@@ -80,8 +84,34 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene implements
 	}
 
 	private void createPhysics(){
-	    physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, 0), false); 
+	    physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, 0), false){
+			@Override
+			public void onUpdate(float pSecondsElapsed){
+				super.onUpdate(pSecondsElapsed);
+				shoot();
+				BossAI();
+				
+				ArrayList projectiles = getProjectiles();
+				for (int i = 0; i < projectiles.size(); i++) {
+					Projectile p = (Projectile) projectiles.get(i);
+					if (p.isVisible() == true) {
+						p.update();
+					} else {
+						projectiles.remove(i);
+					}
+				}
+			}
+		}; 
 	    registerUpdateHandler(physicsWorld);
+	}
+	
+	public void shoot() {
+		Projectile p = new Projectile(player.getX() + 30, player.getY());
+		projectiles.add(p);
+	}
+	
+	public ArrayList getProjectiles() {
+		return projectiles;
 	}
     
     private void createBackground(){
@@ -138,7 +168,7 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene implements
     	player = new Player(300, 400, vbom, physicsWorld);
 		attachChild(player);
 		
-		boss = new Boss(300, -50, vbom, physicsWorld);
+		boss = new Boss(300, 0, vbom, physicsWorld);
 		attachChild(boss);
     }
 
@@ -150,6 +180,10 @@ public class GameScene<SimpleLevelEntityLoaderData> extends BaseScene implements
     @Override
     public SceneType getSceneType(){
         return SceneType.SCENE_GAME;
+    }
+    
+    public void BossAI(){
+  
     }
     
     @Override

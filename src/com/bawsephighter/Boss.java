@@ -20,7 +20,7 @@ public class Boss extends Sprite {
 	}
     
     private void createPhysics(PhysicsWorld physicsWorld){        
-        body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.DynamicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
+        body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.KinematicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
         body.setUserData("boss");
         body.setLinearDamping(5);
         body.setFixedRotation(true);
@@ -29,11 +29,7 @@ public class Boss extends Sprite {
     }
     
     public void setX(float pX){
-    	body.setLinearVelocity(pX, body.getLinearVelocity().y);
-    }
-    
-    public void setY(float pY){
-    	body.setLinearVelocity(body.getLinearVelocity().x, pY);
+    	body.setLinearVelocity(pX, 0);
     }
     
     public int getLives(){
